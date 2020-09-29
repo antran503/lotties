@@ -11,53 +11,96 @@ import Lottie
 
 class ViewController: UIViewController {
   let animationView = AnimationView()
-  let slider = UISlider()
+  let coreAnimationView = UIView()
+  let coreAnimationViewContainer = UIView()
+//  let slider = UISlider()
+  let sleepButton = UIButton(type: .system)
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let animation = Animation.named("LottieLogo1", subdirectory: "TestAnimations")
+    let animation = Animation.named("loading_dots", subdirectory: "TestAnimations")
     
     animationView.animation = animation
     animationView.contentMode = .scaleAspectFit
     view.addSubview(animationView)
-  
-    slider.translatesAutoresizingMaskIntoConstraints = false
-    view.translatesAutoresizingMaskIntoConstraints = false
-    slider.minimumValue = 0
-    slider.maximumValue = 1
-    slider.value = 0
-    view.addSubview(slider)
+
+    view.addSubview(sleepButton)
+    sleepButton.translatesAutoresizingMaskIntoConstraints = false
+
+    coreAnimationViewContainer.translatesAutoresizingMaskIntoConstraints = false
+    coreAnimationView.translatesAutoresizingMaskIntoConstraints = false
+    coreAnimationViewContainer.addSubview(coreAnimationView)
+    view.addSubview(coreAnimationViewContainer)
+
+    /// Lottie Animation
+
+//    view.addSubview(slider)
     animationView.backgroundBehavior = .pauseAndRestore
     animationView.translatesAutoresizingMaskIntoConstraints = false
     animationView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor).isActive = true
     animationView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-    
-    animationView.bottomAnchor.constraint(equalTo: slider.topAnchor, constant: -12).isActive = true
+    animationView.bottomAnchor.constraint(equalTo: coreAnimationViewContainer.topAnchor, constant: -12).isActive = true
     animationView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     animationView.setContentCompressionResistancePriority(.fittingSizeLevel, for: .horizontal)
     
     /// *** Keypath Setting
-    
-    let redValueProvider = ColorValueProvider(Color(r: 1, g: 0.2, b: 0.3, a: 1))
-    animationView.setValueProvider(redValueProvider, keypath: AnimationKeypath(keypath: "Switch Outline Outlines.**.Fill 1.Color"))
-    animationView.setValueProvider(redValueProvider, keypath: AnimationKeypath(keypath: "Checkmark Outlines 2.**.Stroke 1.Color"))
-    
-    /// Slider
-    slider.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    slider.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor).isActive = true
-    slider.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor).isActive = true
-    slider.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -12).isActive = true
-    slider.addTarget(self, action: #selector(updateAnimation(sender:)), for: .valueChanged)
-    slider.addTarget(self, action: #selector(sliderFinished), for: .touchUpInside)
-    
+
+    let ellipseFill = "Ellipse 1.Fill 1.Color"
+    animationView.setValueProvider(
+      ColorValueProvider(UIColor.red.lottieColorValue),
+      keypath: AnimationKeypath(keypath: "1.\(ellipseFill)"))
+    animationView.setValueProvider(
+      ColorValueProvider(UIColor.red.lottieColorValue),
+      keypath: AnimationKeypath(keypath: "2.\(ellipseFill)"))
+    animationView.setValueProvider(
+      ColorValueProvider(UIColor.red.lottieColorValue),
+      keypath: AnimationKeypath(keypath: "3.\(ellipseFill)"))
+
+    /// Core Animation
+
+    coreAnimationViewContainer.heightAnchor.constraint(equalTo: animationView.heightAnchor).isActive = true
+    coreAnimationViewContainer.bottomAnchor.constraint(equalTo: sleepButton.topAnchor, constant: -12).isActive = true
+    coreAnimationViewContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+    coreAnimationViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+    coreAnimationView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    coreAnimationView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+    coreAnimationView.centerYAnchor.constraint(equalTo: coreAnimationViewContainer.centerYAnchor).isActive = true
+    let centerX = coreAnimationView.centerXAnchor.constraint(equalTo: coreAnimationViewContainer.centerXAnchor, constant: -50)
+    coreAnimationView.backgroundColor = .blue
+    coreAnimationView.layer.cornerRadius = 25
+    centerX.isActive = true
+
+    view.layoutIfNeeded()
+
+    UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.repeat, .calculationModeLinear], animations: {
+      UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.5) {
+        centerX.constant = 50
+        self.view.layoutIfNeeded()
+      }
+      UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
+        centerX.constant = -50
+        self.view.layoutIfNeeded()
+      }
+    })
+
+    /// Button
+
+    sleepButton.setTitle("Sleep for 1 second", for: .normal)
+    sleepButton.addTarget(self, action: #selector(tapped(sender:)), for: .touchUpInside)
+    sleepButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor).isActive = true
+    sleepButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor).isActive = true
+    sleepButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -12).isActive = true
+
+
     /// Play Animation
     
     /// Create a display link to make slider track with animation progress.
-    displayLink = CADisplayLink(target: self, selector: #selector(animationCallback))
-    displayLink?.add(to: .current,
-                    forMode: RunLoop.Mode.default)
-    
+//    displayLink = CADisplayLink(target: self, selector: #selector(animationCallback))
+//    displayLink?.add(to: .current,
+//                    forMode: RunLoop.Mode.default)
+//
     
     /// Animated Switch
     
@@ -123,6 +166,11 @@ class ViewController: UIViewController {
   @objc func updateAnimation(sender: UISlider) {
     animationView.currentProgress = CGFloat(sender.value)
   }
+
+  @objc func tapped(sender: UIButton) {
+    // Block the main thread for 1 second
+    sleep(1)
+  }
   
   @objc func sliderFinished() {
 //    animationView.play(fromProgress: 0,
@@ -138,9 +186,9 @@ class ViewController: UIViewController {
   }
   
   @objc func animationCallback() {
-    if animationView.isAnimationPlaying {
-      slider.value = Float(animationView.realtimeAnimationProgress)
-    }
+//    if animationView.isAnimationPlaying {
+//      slider.value = Float(animationView.realtimeAnimationProgress)
+//    }
   }
   
   
@@ -148,7 +196,7 @@ class ViewController: UIViewController {
     super.viewDidAppear(animated)
     animationView.play(fromProgress: 0,
                        toProgress: 1,
-                       loopMode: LottieLoopMode.playOnce,
+                       loopMode: LottieLoopMode.repeat(1000),
                        completion: { (finished) in
                         if finished {
                           print("Animation Complete")
