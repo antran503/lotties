@@ -11,9 +11,7 @@ import Lottie
 
 class ViewController: UIViewController {
   let animationView = AnimationView()
-  let coreAnimationView = UIView()
-  let coreAnimationViewContainer = UIView()
-//  let slider = UISlider()
+  let kite = LayerView()
   let sleepButton = UIButton(type: .system)
   
   override func viewDidLoad() {
@@ -28,10 +26,8 @@ class ViewController: UIViewController {
     view.addSubview(sleepButton)
     sleepButton.translatesAutoresizingMaskIntoConstraints = false
 
-    coreAnimationViewContainer.translatesAutoresizingMaskIntoConstraints = false
-    coreAnimationView.translatesAutoresizingMaskIntoConstraints = false
-    coreAnimationViewContainer.addSubview(coreAnimationView)
-    view.addSubview(coreAnimationViewContainer)
+    view.addSubview(kite)
+    kite.translatesAutoresizingMaskIntoConstraints = false
 
     /// Lottie Animation
 
@@ -40,7 +36,7 @@ class ViewController: UIViewController {
     animationView.translatesAutoresizingMaskIntoConstraints = false
     animationView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor).isActive = true
     animationView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-    animationView.bottomAnchor.constraint(equalTo: coreAnimationViewContainer.topAnchor, constant: -12).isActive = true
+    animationView.bottomAnchor.constraint(equalTo: kite.topAnchor, constant: -12).isActive = true
     animationView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     animationView.setContentCompressionResistancePriority(.fittingSizeLevel, for: .horizontal)
     
@@ -57,33 +53,12 @@ class ViewController: UIViewController {
       ColorValueProvider(UIColor.red.lottieColorValue),
       keypath: AnimationKeypath(keypath: "3.\(ellipseFill)"))
 
-    /// Core Animation
+    /// Kite compositor
 
-    coreAnimationViewContainer.heightAnchor.constraint(equalTo: animationView.heightAnchor).isActive = true
-    coreAnimationViewContainer.bottomAnchor.constraint(equalTo: sleepButton.topAnchor, constant: -12).isActive = true
-    coreAnimationViewContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-    coreAnimationViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-
-    coreAnimationView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    coreAnimationView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-    coreAnimationView.centerYAnchor.constraint(equalTo: coreAnimationViewContainer.centerYAnchor).isActive = true
-    let centerX = coreAnimationView.centerXAnchor.constraint(equalTo: coreAnimationViewContainer.centerXAnchor, constant: -50)
-    coreAnimationView.backgroundColor = .blue
-    coreAnimationView.layer.cornerRadius = 25
-    centerX.isActive = true
-
-    view.layoutIfNeeded()
-
-    UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.repeat, .calculationModeLinear], animations: {
-      UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.5) {
-        centerX.constant = 50
-        self.view.layoutIfNeeded()
-      }
-      UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
-        centerX.constant = -50
-        self.view.layoutIfNeeded()
-      }
-    })
+    kite.heightAnchor.constraint(equalTo: animationView.heightAnchor).isActive = true
+    kite.bottomAnchor.constraint(equalTo: sleepButton.topAnchor, constant: -12).isActive = true
+    kite.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+    kite.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
     /// Button
 
@@ -92,7 +67,6 @@ class ViewController: UIViewController {
     sleepButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor).isActive = true
     sleepButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor).isActive = true
     sleepButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -12).isActive = true
-
 
     /// Play Animation
     
